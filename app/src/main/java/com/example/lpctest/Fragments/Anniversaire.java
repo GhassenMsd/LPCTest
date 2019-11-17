@@ -1,6 +1,7 @@
 package com.example.lpctest.Fragments;
 
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.lpctest.Adapters.PotAdapter;
@@ -29,11 +31,12 @@ import retrofit2.Response;
 public class Anniversaire extends Fragment {
 
     RecyclerView recyclerView;
+    View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.fragment_anniversaire, container, false);
+        view= inflater.inflate(R.layout.fragment_anniversaire, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerView);
 
@@ -50,10 +53,13 @@ public class Anniversaire extends Fragment {
                             listAnniversaire.add(pots.get(i));
                         }
                     }
-
-                    PotAdapter adapter = new PotAdapter(getActivity(),listAnniversaire);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    recyclerView.setAdapter(adapter);
+                    if(listAnniversaire.size()==0){
+                        setViewLayout(R.layout.response_null);
+                    }else{
+                        PotAdapter adapter = new PotAdapter(getActivity(),listAnniversaire);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                        recyclerView.setAdapter(adapter);
+                    }
                 }else{
                     Toast.makeText(getContext(),"response not succes",Toast.LENGTH_SHORT).show();
                 }
@@ -67,6 +73,19 @@ public class Anniversaire extends Fragment {
         });
 
         return view;
+    }
+
+    private void setViewLayout(int id){
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        view = inflater.inflate(id, null);
+        ViewGroup rootView = (ViewGroup) getView();
+        rootView.removeAllViews();
+
+        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+        rootView.addView(view,params);
+
     }
 
 }
