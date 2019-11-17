@@ -1,6 +1,7 @@
 package com.example.lpctest.Fragments;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -55,28 +56,7 @@ public class Solidaire extends Fragment {
                         List<Pot> pots = response.body();
                         List<Pot> listSolidaire = new ArrayList<>();
 
-                        for (int i = 0; i < pots.size(); i++) {
-                            if(pots.get(i).getCategory()==2){
-                                listSolidaire.add(pots.get(i));
-
-                                dbManager = new DBManager(getActivity());
-                                dbManager.open();
-
-                                dbManager.insert(pots.get(i));
-                            }
-                        }
-
-                        if(listSolidaire.size()==0){
-                            setViewLayout(R.layout.response_null);
-                            progressBar.setVisibility(View.INVISIBLE);
-
-                        }else{
-                            PotAdapter adapter = new PotAdapter(getActivity(),listSolidaire);
-                            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                            recyclerView.setAdapter(adapter);
-                            progressBar.setVisibility(View.INVISIBLE);
-
-                        }
+                        Filter(pots,listSolidaire);
 
                 }else{
                     Toast.makeText(getContext(),"Oups une erreur est survenue",Toast.LENGTH_SHORT).show();
@@ -86,7 +66,31 @@ public class Solidaire extends Fragment {
 
             @Override
             public void onFailure(Call<List<Pot>> call, Throwable t) {
-                Toast.makeText(getContext(),"Oups une erreur est survenue",Toast.LENGTH_LONG).show();
+                dbManager = new DBManager(getActivity());
+                dbManager.open();
+
+                Cursor cursor = dbManager.fetch();
+                List<Pot> potList = new ArrayList<>();
+                if(cursor!=null && cursor.getCount() > 0)
+                {
+                    if (cursor.moveToFirst())
+                    {
+                        do {
+                            for (int i = 0; i <= cursor.getCount(); i++){
+                                Pot pot = new Pot(cursor.getString(0),cursor.getString(1),cursor.getString(2),Integer.parseInt(cursor.getString(3)),Integer.parseInt(cursor.getString(4)),Float.parseFloat(cursor.getString(5)));
+                                Log.d("pot", "onFailure: "+pot.toString());
+                                potList.add(pot);
+                            }
+                        } while (cursor.moveToNext());
+                    }
+                    List<Pot> listDepart1 = new ArrayList<>();
+
+                    Filter(potList,listDepart1);
+
+                }else {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getContext(),"Oups une erreur est survenue",Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -104,5 +108,29 @@ public class Solidaire extends Fragment {
                 FrameLayout.LayoutParams.MATCH_PARENT);
         rootView.addView(view,params);
 
+    }
+
+    private void Filter(List<Pot> listOrigin,List<Pot> listfiltree){
+        for (int i = 0; i < listOrigin.size(); i++) {
+            if(listOrigin.get(i).getCategory()==2){
+                listfiltree.add(listOrigin.get(i));
+
+                dbManager = new DBManager(getActivity());
+                dbManager.open();
+
+                dbManager.insert(listOrigin.get(i));
+            }
+        }
+
+        if(listfiltree.size()==0){
+            setViewLayout(R.layout.response_null);
+            progressBar.setVisibility(View.INVISIBLE);
+        }else{
+            PotAdapter adapter = new PotAdapter(getActivity(),listfiltree);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
+            progressBar.setVisibility(View.INVISIBLE);
+
+        }
     }
 }

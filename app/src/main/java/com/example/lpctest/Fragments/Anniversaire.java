@@ -57,28 +57,7 @@ public class Anniversaire extends Fragment {
                     List<Pot> pots = response.body();
                     List<Pot> listAnniversaire = new ArrayList<>();
 
-                    for (int i = 0; i < pots.size(); i++) {
-                        if(pots.get(i).getCategory()==0){
-
-                            listAnniversaire.add(pots.get(i));
-
-                            dbManager = new DBManager(getActivity());
-                            dbManager.open();
-
-                            dbManager.insert(pots.get(i));
-
-                        }
-                    }
-                    if(listAnniversaire.size()==0){
-                        setViewLayout(R.layout.response_null);
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }else{
-
-                        PotAdapter adapter = new PotAdapter(getActivity(),listAnniversaire);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                        recyclerView.setAdapter(adapter);
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
+                    Filter(pots,listAnniversaire);
                 }else{
                     Toast.makeText(getContext(),"Oups une erreur est survenue",Toast.LENGTH_SHORT).show();
                 }
@@ -99,15 +78,15 @@ public class Anniversaire extends Fragment {
                         do {
                             for (int i = 0; i <= cursor.getCount(); i++){
                                 Pot pot = new Pot(cursor.getString(0),cursor.getString(1),cursor.getString(2),Integer.parseInt(cursor.getString(3)),Integer.parseInt(cursor.getString(4)),Float.parseFloat(cursor.getString(5)));
+                                Log.d("pot", "onFailure: "+pot.toString());
                                 potList.add(pot);
                             }
                         } while (cursor.moveToNext());
                     }
-                    PotAdapter adapter = new PotAdapter(getActivity(),potList);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    recyclerView.setAdapter(adapter);
-                    progressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(getContext(),"Oups une erreur est survenue",Toast.LENGTH_LONG).show();
+                    List<Pot> listAnniversaire1 = new ArrayList<>();
+
+                    Filter(potList,listAnniversaire1);
+
                 }else {
                     progressBar.setVisibility(View.INVISIBLE);
                     Toast.makeText(getContext(),"Oups une erreur est survenue",Toast.LENGTH_LONG).show();
@@ -130,6 +109,30 @@ public class Anniversaire extends Fragment {
                 FrameLayout.LayoutParams.MATCH_PARENT);
         rootView.addView(view,params);
 
+    }
+
+    private void Filter(List<Pot> listOrigin,List<Pot> listfiltree){
+        for (int i = 0; i < listOrigin.size(); i++) {
+            if(listOrigin.get(i).getCategory()==0){
+                listfiltree.add(listOrigin.get(i));
+
+                dbManager = new DBManager(getActivity());
+                dbManager.open();
+
+                dbManager.insert(listOrigin.get(i));
+            }
+        }
+
+        if(listfiltree.size()==0){
+            setViewLayout(R.layout.response_null);
+            progressBar.setVisibility(View.INVISIBLE);
+        }else{
+            PotAdapter adapter = new PotAdapter(getActivity(),listfiltree);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
+            progressBar.setVisibility(View.INVISIBLE);
+
+        }
     }
 
 
