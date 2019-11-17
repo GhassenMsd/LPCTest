@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.lpctest.Adapters.PotAdapter;
+import com.example.lpctest.DataBase.DBManager;
 import com.example.lpctest.Entities.Pot;
 import com.example.lpctest.R;
 import com.example.lpctest.retro.ApiUtil;
@@ -32,6 +33,8 @@ public class Solidaire extends Fragment {
 
     RecyclerView recyclerView;
     View view;
+    private DBManager dbManager;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,6 +54,11 @@ public class Solidaire extends Fragment {
                         for (int i = 0; i < pots.size(); i++) {
                             if(pots.get(i).getCategory()==2){
                                 listSolidaire.add(pots.get(i));
+
+                                dbManager = new DBManager(getActivity());
+                                dbManager.open();
+
+                                dbManager.insert(pots.get(i));
                             }
                         }
 

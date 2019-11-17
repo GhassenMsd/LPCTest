@@ -2,6 +2,8 @@ package com.example.lpctest.Fragments;
 
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.lpctest.Adapters.PotAdapter;
+import com.example.lpctest.DataBase.DBManager;
 import com.example.lpctest.Entities.Pot;
 import com.example.lpctest.R;
 import com.example.lpctest.retro.ApiUtil;
@@ -32,6 +35,7 @@ public class Anniversaire extends Fragment {
 
     RecyclerView recyclerView;
     View view;
+    private DBManager dbManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,12 +54,20 @@ public class Anniversaire extends Fragment {
 
                     for (int i = 0; i < pots.size(); i++) {
                         if(pots.get(i).getCategory()==0){
+
                             listAnniversaire.add(pots.get(i));
+
+                            dbManager = new DBManager(getActivity());
+                            dbManager.open();
+
+                            dbManager.insert(pots.get(i));
+
                         }
                     }
                     if(listAnniversaire.size()==0){
                         setViewLayout(R.layout.response_null);
                     }else{
+
                         PotAdapter adapter = new PotAdapter(getActivity(),listAnniversaire);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                         recyclerView.setAdapter(adapter);
@@ -87,5 +99,6 @@ public class Anniversaire extends Fragment {
         rootView.addView(view,params);
 
     }
+
 
 }
