@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.lpctest.Adapters.PotAdapter;
@@ -33,6 +34,8 @@ public class Depart extends Fragment {
     RecyclerView recyclerView;
     View view;
     private DBManager dbManager;
+    ProgressBar progressBar;
+
 
 
     @Override
@@ -41,6 +44,8 @@ public class Depart extends Fragment {
         view= inflater.inflate(R.layout.fragment_anniversaire, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerView);
+        progressBar = view.findViewById(R.id.homeprogress);
+
 
         ApiUtil.getServiceClass().getAllPots().enqueue(new Callback<List<Pot>>() {
             @Override
@@ -63,21 +68,24 @@ public class Depart extends Fragment {
 
                     if(listDepart.size()==0){
                         setViewLayout(R.layout.response_null);
+                        progressBar.setVisibility(View.INVISIBLE);
                     }else{
                         PotAdapter adapter = new PotAdapter(getActivity(),listDepart);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                         recyclerView.setAdapter(adapter);
+                        progressBar.setVisibility(View.INVISIBLE);
+
                     }
 
                 }else{
-                    Toast.makeText(getContext(),"response not succes",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),"Oups une erreur est survenue",Toast.LENGTH_SHORT).show();
                 }
 
             }
 
             @Override
             public void onFailure(Call<List<Pot>> call, Throwable t) {
-                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(),"Oups une erreur est survenue",Toast.LENGTH_LONG).show();
             }
         });
 

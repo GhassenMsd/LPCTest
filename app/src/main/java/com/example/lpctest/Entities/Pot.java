@@ -42,6 +42,14 @@ public class Pot {
         this.amount = amount;
         this.imageUrl = imageUrl;
     }
+    public Pot(String id,String name, String creationDate, int category, int contributorsCount, float amount) {
+        this.id = id;
+        this.name = name;
+        this.creationDate = creationDate;
+        this.category = category;
+        this.contributorsCount = contributorsCount;
+        this.amount = amount;
+    }
 
     public String getId() {
         return id;

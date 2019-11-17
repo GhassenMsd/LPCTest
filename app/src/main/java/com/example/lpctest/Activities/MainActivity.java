@@ -5,14 +5,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.lpctest.Adapters.PagerAdapter;
+import com.example.lpctest.Entities.Pot;
 import com.example.lpctest.R;
+import com.example.lpctest.retro.ApiUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,6 +60,25 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                ApiUtil.getServiceClass().AddPot().enqueue(new Callback<Pot>() {
+                    @Override
+                    public void onResponse(Call<Pot> call, Response<Pot> response) {
+                        if(response.isSuccessful()){
+                            Toast.makeText(getApplicationContext(),"Succes",Toast.LENGTH_SHORT).show();
+
+                        }else {
+                            Toast.makeText(getApplicationContext(),"Succes but no add",Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Pot> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(),"Oups une erreur est survenue",Toast.LENGTH_SHORT).show();
+
+                    }
+                });
 
 
             }
